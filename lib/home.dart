@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_rectangle/animation.dart';
 
-class AnimeBox extends StatefulWidget {
+class RedRectangleAnimated extends StatefulWidget {
   @override
-  _AnimeBoxState createState() => _AnimeBoxState();
+  _RedRectangleAnimatedState createState() => _RedRectangleAnimatedState();
 }
 
-class _AnimeBoxState extends State<AnimeBox>
+class _RedRectangleAnimatedState extends State<RedRectangleAnimated>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
   Animation<Offset> _offsetAnimation;
 
   @override
+  // initiate animation for rectangle
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
     _offsetAnimation = Tween<Offset>(
       begin: Offset.zero,
-      end: const Offset(0.0, -0.5),
+      end: const Offset(0.0, -1.0),
     ).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.decelerate,
@@ -32,6 +34,7 @@ class _AnimeBoxState extends State<AnimeBox>
     _controller.dispose();
   }
 
+  // Widget built as the primary layout
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -46,13 +49,15 @@ class _AnimeBoxState extends State<AnimeBox>
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SlideTransition(
-                  position: _offsetAnimation,
-                  child: Container(
-                    width: 50,
-                    height: 100,
-                    color: Colors.red,
-                  ),
+                Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Stack(children: [
+                      for (int i=0;i<=10000;i=i+1000)
+                        GreenBoxGenerator(delay: i,),
+                    ],),
+                    Center(child: animatedBox(50, 100, Colors.red)),
+                  ],
                 ),
                 Divider(
                   thickness: 10,
@@ -62,5 +67,17 @@ class _AnimeBoxState extends State<AnimeBox>
                 ),
               ],
             )));
+  }
+
+  //animated rectangle
+  Widget animatedBox(double w, double h, Color colors) {
+    return SlideTransition(
+      position: _offsetAnimation,
+      child: Container(
+        width: w,
+        height: h,
+        color: colors,
+      ),
+    );
   }
 }
